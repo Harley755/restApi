@@ -9,10 +9,10 @@ class InvoicesFilter extends ApiFilter
 {
     protected $safeParms = [
         'customerId' => ['eq'],
-        'amount' => ['eq', 'gt', 'lt'],
-        'status' => ['eq'],
-        'billedDate' => ['eq'],
-        'paidDate' => ['eq'],
+        'amount' => ['eq', 'gt', 'lt', 'gte', 'lte'],
+        'status' => ['eq', 'ne'],
+        'billedDate' => ['eq', 'gt', 'lt', 'gte', 'lte'],
+        'paidDate' => ['eq', 'gt', 'lt', 'gte', 'lte'],
     ];
 
     protected $columnMap = [
@@ -29,29 +29,6 @@ class InvoicesFilter extends ApiFilter
         'lte' => '<=',
         'gt' => '>',
         'gte' => '>=',
+        'ne' => '!=',
     ];
-
-    public function transform(Request $request)
-    {
-        $eloQuery = [];
-
-        foreach ($this->safeParms as $parm => $operators) {
-            $query = $request->query($parm);
-
-            if (!isset($query)) {
-                continue;
-            }
-
-            $column = $this->columnMap[$parm] ?? $parm;
-
-            foreach ($operators as $operator) {
-                if (isset($query[$operator])) {
-                    $eloQuery[] = [$column, $this->operatorMap[$operator], $query[$operator]];
-                }
-            }
-        }
-        // dd($eloQuery);
-
-        return $eloQuery;
-    }
 }
